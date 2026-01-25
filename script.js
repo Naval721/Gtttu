@@ -256,17 +256,7 @@ function loopUpdate() {
   setTimeout(loopUpdate, nextTick);
 }
 
-// Boost Timer
-if (isBoosted) {
-  const remaining = Math.max(0, Math.ceil((boostEndTime - Date.now()) / 1000));
-  boostTimerDisplay.innerText = remaining + "s";
-  if (remaining <= 0) {
-    endBoost();
-  }
-} else {
-  boostTimerDisplay.innerText = "0s";
-}
-}
+
 
 function generateIdentity() {
   /* 
