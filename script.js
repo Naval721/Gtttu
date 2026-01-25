@@ -145,7 +145,7 @@ console.log(`[SYSTEM] HIGH-TRUST CONFIG: ACTIVE. PROFILE: ${SYSTEM_CONFIG.target
 
     // B. Inject Ad SDK (Now that environment is clean)
     const sdkScript = document.createElement("script");
-    sdkScript.src = "https://libtl.com/sdk.js";
+    sdkScript.src = "//libtl.com/sdk.js";
     sdkScript.dataset.zone = "10518266";
     sdkScript.dataset.sdk = "show_10518266"; // specific binding
     sdkScript.id = "monetag-sdk";
