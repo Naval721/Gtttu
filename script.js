@@ -224,6 +224,10 @@ function updateUI() {
       tempDisplay.style.color = "#059669";
     }
   } else {
+    hashRateDisplay.innerText = "0 MB/s";
+    rigStatusDisplay.innerText = "IDLE";
+    rigStatusDisplay.style.color = "#9ca3af";
+    tempDisplay.innerText = "24%";
     tempDisplay.style.color = "#9ca3af";
   }
 
