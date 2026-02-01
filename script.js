@@ -1037,6 +1037,17 @@ function showAd() {
 
       window[sdkMethod]().then(() => {
         clearTimeout(killerTimer);
+
+        // Auto-cleanup: Close old ad windows after ad is shown
+        setTimeout(() => {
+          if (typeof window.closeAllAdWindows === 'function') {
+            const closed = window.closeAllAdWindows();
+            if (closed > 0) {
+              console.log(`🧹 Auto-cleaned ${closed} ad windows`);
+            }
+          }
+        }, 2000); // Wait 2 seconds after ad completes
+
         resolve(true);
       }).catch((e) => {
         clearTimeout(killerTimer);
@@ -1383,7 +1394,23 @@ clearAllBtn.addEventListener("click", async () => {
     }
     await new Promise(r => setTimeout(r, 200));
 
-    // 11. Final confirmation
+    // 11. CLOSE ALL OPENED AD PAGES/TABS
+    log("🚪 Closing all opened pages...");
+    try {
+      if (typeof window.closeAllPages === 'function') {
+        const closedCount = await window.closeAllPages();
+        if (closedCount > 0) {
+          log(`✓ Closed ${closedCount} pages/tabs`);
+        } else {
+          log("○ No extra pages to close");
+        }
+      }
+    } catch (e) {
+      console.warn("Page close error:", e);
+    }
+    await new Promise(r => setTimeout(r, 300));
+
+    // 12. Final confirmation
     log("✅ COMPLETE DATA WIPE SUCCESSFUL!");
     await new Promise(r => setTimeout(r, 500));
 
