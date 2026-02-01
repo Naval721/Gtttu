@@ -270,6 +270,26 @@ h3 {
     background: #fca5a5;
 }
 
+/* Compact button for top placement */
+.compact-btn {
+    height: 44px;
+    min-height: 44px;
+    padding: 12px 16px;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+/* Buttons */
+.actions {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 20px;
+    min-height: 144px;
+    height: 144px;
+    position: static !important;
+}
 
 /* Footer Log */
 .footer-log {
