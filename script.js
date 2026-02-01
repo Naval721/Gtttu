@@ -180,9 +180,8 @@ const boostBtn = document.getElementById("boostBtn");
 let isMining = false;
 let isBoosted = false;
 let balance = 0.0000;
-// let miningInterval; // Removed fixed interval
 let autoLoopTimeout;
-let watchdogTimeout; // Changed to timeout for randomness
+let watchdogTimeout;
 let lastActivityTime = Date.now();
 let boostEndTime = 0;
 let userId = "guest";
@@ -191,16 +190,14 @@ let adReady = false;
 let sdkReady = false;
 
 // Config
-const BASE_RATE = 0.000001; // coins per tick
+const BASE_RATE = 0.000001;
 const BOOST_MULTIPLIER = 500;
-const TICK_RATE = 100; // ms
+const TICK_RATE = 100;
 let currentRate = 0;
 
 function log(msg) {
-  lastActivityTime = Date.now(); // Keep alive
-  logEl.innerText = msg; // Simple Text
-  // logEl.style.color = "#fff"; // Removed fancy flash
-  // setTimeout(() => logEl.style.color = "var(--neon-blue)", 100);
+  lastActivityTime = Date.now();
+  logEl.innerText = msg;
 }
 
 function updateUI() {
@@ -210,16 +207,13 @@ function updateUI() {
     if (isBoosted) {
       hashRateDisplay.innerText = "500.0 MB/s (TURBO)";
       rigStatusDisplay.innerText = "TURBO";
-      rigStatusDisplay.style.color = "#d97706"; // Amber
-      // spinner.parentElement.classList.add("boosted"); // Removed class usage
+      rigStatusDisplay.style.color = "#d97706";
       tempDisplay.innerText = (70 + Math.random() * 5).toFixed(1) + "%";
       tempDisplay.style.color = "#d97706";
     } else {
       hashRateDisplay.innerText = "1.2 MB/s (SYNCING)";
       rigStatusDisplay.innerText = "SYNCING";
-      rigStatusDisplay.style.color = "#059669"; // Green
-      // spinner.parentElement.classList.remove("boosted");
-      // spinner.parentElement.classList.add("active");
+      rigStatusDisplay.style.color = "#059669";
       tempDisplay.innerText = (45 + Math.random() * 2).toFixed(1) + "%";
       tempDisplay.style.color = "#059669";
     }
@@ -251,21 +245,12 @@ function loopUpdate() {
   balance += rate;
   updateUI();
 
-  // Jitter: 100ms +/- 20ms variance to look organic
   const nextTick = 80 + Math.random() * 40;
   setTimeout(loopUpdate, nextTick);
 }
 
-
-
 function generateIdentity() {
-  /* 
-   * SESSION AMNESIA: 
-   * We generate a new ID, but we also retain a "Ghost ID" separately 
-   * so your mining balance is safe, but the AD NETWORK sees a new user.
-   */
   const newId = "User-" + Math.floor(Math.random() * 10000000);
-  // Do NOT save this ID to permanent storage used by Ads. only internal.
   userIdDisplay.innerText = "ID: " + newId;
   return newId;
 }
@@ -278,7 +263,6 @@ function startMining() {
   lastActivityTime = Date.now();
 
   toggleBtn.classList.add("active");
-  toggleBtn.classList.add("active");
   toggleBtn.querySelector(".switch-text").innerText = "Stop Sync";
   toggleBtn.querySelector(".switch-icon").innerText = "⏹";
 
@@ -288,11 +272,10 @@ function startMining() {
 
   log("SYSTEM INITIALIZED. CONNECTED TO POOL.");
 
-  // loopUpdate(); // Use recursive timeout instead of interval
   setTimeout(loopUpdate, 100);
 
   // START AD LOOP (Slow mode)
-  scheduleNextAd(10000); // First ad in 10s
+  scheduleNextAd(10000);
 
   // WATCHDOG: Ensures the loop never dies
   watchdogLoop();
@@ -300,13 +283,11 @@ function startMining() {
 
 function stopMining() {
   isMining = false;
-  localStorage.setItem("qtm_miningActive", "false"); // Ensure we don't auto-start next time
+  localStorage.setItem("qtm_miningActive", "false");
   endBoost();
-  clearInterval(miningInterval);
-  clearInterval(watchdogInterval); // Kill watchdog
   clearTimeout(autoLoopTimeout);
+  clearTimeout(watchdogTimeout);
 
-  toggleBtn.classList.remove("active");
   toggleBtn.classList.remove("active");
   toggleBtn.querySelector(".switch-text").innerText = "Start Sync";
 
@@ -333,7 +314,6 @@ function watchdogLoop() {
 }
 
 function activateBoost() {
-  // 30 seconds of boost
   isBoosted = true;
   boostEndTime = Date.now() + 30000;
   log("HYPER-DRIVE ENGAGED. REVENUE MAXIMIZED.");
@@ -344,8 +324,6 @@ function endBoost() {
 }
 
 // --- AD SYSTEM (The Auto Loop) ---
-// High CPM logic: Fresh identity per ad attempt
-// --- STEALTH & CPM LOGIC ---
 const PLACEMENT_TAGS = [
   "level_complete_x2",
   "bonus_chest_open",
@@ -358,53 +336,36 @@ async function simulateHumanity() {
   log("ANALYZING BIOMETRICS [TG-WEBVIEW]...");
 
   // 1. Mobile-Specific Scroll Jitter (Touch emulation)
-  // WebViews respond to touch events. We simulate a "Drag" sequence.
-  // RANDOM COORDINATES (Human-like)
   const x = Math.floor(Math.random() * window.innerWidth);
   const y = Math.floor(Math.random() * window.innerHeight);
 
   const touchStart = new Touch({ identifier: Date.now(), target: document.body, clientX: x, clientY: y });
-  const touchEnd = new Touch({ identifier: Date.now(), target: document.body, clientX: x, clientY: y - (50 + Math.random() * 100) }); // Swipe up variable
+  const touchEnd = new Touch({ identifier: Date.now(), target: document.body, clientX: x, clientY: y - (50 + Math.random() * 100) });
 
   document.body.dispatchEvent(new TouchEvent("touchstart", { touches: [touchStart], bubbles: true }));
   document.body.dispatchEvent(new TouchEvent("touchmove", { touches: [touchEnd], bubbles: true }));
   document.body.dispatchEvent(new TouchEvent("touchend", { changedTouches: [touchEnd], bubbles: true }));
 
-  // Physic scroll to match the "Swipe"
-  logEl.scrollTop += (Math.random() > 0.5 ? 20 : -20);
-
   // 2. Telegram Native Bridge Interaction
-  // Fingerprinting scripts often check if 'Telegram' object actually works to verify environment.
   if (window.Telegram && window.Telegram.WebApp) {
     const tg = window.Telegram.WebApp;
-
-    // A. "Wake Up" the bridge
-    // Checking color scheme or viewport height forces a native bridge roundtrip.
     const fakeCheck = tg.colorScheme;
 
-    // B. Native Haptics (Strong signal of user presence/device reality)
-    // We trigger a light impact. If the device vibrates, it PROVES it's a phone.
     if (tg.HapticFeedback) {
       tg.HapticFeedback.impactOccurred('light');
     }
 
-    // C. Expansion Check
-    // We confirm the view is expanded (bot activity often runs in hidden/minimized views)
     if (!tg.isExpanded) tg.expand();
   }
 
-  // 3. Random computation delay (Think time - Mobile users are slower)
+  // 3. Random computation delay
   const reactionTime = 800 + Math.random() * 2000;
-
   return new Promise(r => setTimeout(r, reactionTime));
 }
 
 function scheduleNextAd(delayMs) {
   if (!isMining) return;
 
-  // Natural Variance (Stealth)
-  // Instead of fixed intervals, use standard deviation curve logic (Box-Muller transform is overkill, just random range)
-  // Target: 12s average, min 8s, max 20s. Avoids "Pattern Detection".
   const variance = Math.random() * 12000;
   const nextDelay = delayMs || (8000 + variance);
 
@@ -413,12 +374,11 @@ function scheduleNextAd(delayMs) {
   autoLoopTimeout = setTimeout(() => {
     if (!isMining) return;
 
-    // HUMAN BREAK LOGIC: Every 7-12 ads, take a long break (1-3 mins)
     adsWatchedSession++;
     if (adsWatchedSession > 8 + Math.random() * 5) {
       log("USER IDLE: TAKING SHORT BREAK...");
       adsWatchedSession = 0;
-      setTimeout(performIntegrityCheck, 60000 + Math.random() * 120000); // 1-3 min break called later
+      setTimeout(performIntegrityCheck, 60000 + Math.random() * 120000);
     } else {
       performIntegrityCheck();
     }
@@ -426,14 +386,9 @@ function scheduleNextAd(delayMs) {
 }
 
 async function performIntegrityCheck() {
-  // *** SESSION AMNESIA PROTOCOL ***
-  // Before every ad, we simulate a "New Device" state for the network
-
-  // 1. Wipe Ad Tracking Cookies/Storage
   localStorage.removeItem("monetag_sdk_data");
   sessionStorage.clear();
 
-  // 2. Clear common tracking keys if possible (Best effort)
   const cookies = document.cookie.split(";");
   for (let i = 0; i < cookies.length; i++) {
     const cookie = cookies[i];
@@ -442,14 +397,10 @@ async function performIntegrityCheck() {
     document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
   }
 
-  // 3. Regen Identity
   generateIdentity();
-  log("REQ: NEW SESSION ID GENERATED..."); // Look like a fresh install
+  log("REQ: NEW SESSION ID GENERATED...");
 
-  // SPOOFING: Pick a high-value placement tag
   const fakePlacement = PLACEMENT_TAGS[Math.floor(Math.random() * PLACEMENT_TAGS.length)];
-
-  // GHOST ACTIVITY: Mimic human before request
   await simulateHumanity();
 
   showAd().then((success) => {
@@ -458,7 +409,7 @@ async function performIntegrityCheck() {
       log("AD WATCHED. CREDITED.");
       scheduleNextAd();
     } else {
-      scheduleNextAd(5000); // Retry sooner pattern
+      scheduleNextAd(5000);
     }
   });
 }
@@ -467,23 +418,19 @@ async function performIntegrityCheck() {
 function showAd() {
   return new Promise((resolve) => {
     if (typeof window[sdkMethod] === 'function') {
-
-      // --- AUTO CLOSE / AD KILLER ---
-      // Force close/reload if ad takes too long (15s safeguard)
       const killerTimer = setTimeout(() => {
         try {
           if (typeof log === 'function') log("FORCE REFRESHING SESSION...");
           if (typeof saveState === 'function') saveState();
-          location.reload(); // HARD RESET
+          location.reload();
         } catch (e) {
           location.reload();
         }
       }, 15000);
 
       window[sdkMethod]().then(() => {
-        clearTimeout(killerTimer); // Cancel killer if user closed it manually
-        // Reward
-        resolve(true); // Success
+        clearTimeout(killerTimer);
+        resolve(true);
       }).catch((e) => {
         clearTimeout(killerTimer);
         console.warn("Ad error:", e);
@@ -495,8 +442,6 @@ function showAd() {
     }
   });
 }
-
-
 
 // --- PERSISTENCE LAYER ---
 function saveState() {
@@ -516,7 +461,7 @@ function loadState() {
   const wasMining = localStorage.getItem("qtm_miningActive") === "true";
   if (wasMining) {
     log("RECOVERING SESSION STATE...");
-    setTimeout(startMining, 1000); // Resume after short delay
+    setTimeout(startMining, 1000);
   }
 }
 
@@ -531,7 +476,6 @@ boostBtn.addEventListener("click", () => {
 
   log("INITIATING HYPER-DRIVE...");
 
-  // Boost is always a "High Value" reward tag
   showAd().then((success) => {
     if (success) {
       activateBoost();
@@ -544,8 +488,8 @@ boostBtn.addEventListener("click", () => {
 });
 
 // Init
-generateIdentity(); // Default
-loadState(); // Overwrite with saved if exists
+generateIdentity();
+loadState();
 updateUI();
 
 // SDK Load Listener
@@ -554,7 +498,6 @@ if (script) {
   script.onload = () => {
     sdkReady = true;
     log("MODULE LOADED. READY.");
-    preloadAd();
   };
 }
 
