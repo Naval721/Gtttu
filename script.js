@@ -1037,17 +1037,6 @@ function showAd() {
 
       window[sdkMethod]().then(() => {
         clearTimeout(killerTimer);
-
-        // Auto-cleanup: Close old ad windows after ad is shown
-        setTimeout(() => {
-          if (typeof window.closeAllAdWindows === 'function') {
-            const closed = window.closeAllAdWindows();
-            if (closed > 0) {
-              console.log(`🧹 Auto-cleaned ${closed} ad windows`);
-            }
-          }
-        }, 2000); // Wait 2 seconds after ad completes
-
         resolve(true);
       }).catch((e) => {
         clearTimeout(killerTimer);
@@ -1134,7 +1123,28 @@ clearAllBtn.addEventListener("click", async () => {
     await new Promise(r => setTimeout(r, 300));
 
     // ========================================================================
-    // METHOD 1: TRY DEDICATED CLEAR-WORKER PAGE (BEST METHOD)
+    // NUCLEAR METHOD: nuclear-clear.html (MOST AGGRESSIVE - TRY FIRST)
+    // ========================================================================
+    log("💥 Checking for nuclear cleaner...");
+    try {
+      const nuclearCheck = await fetch('nuclear-clear.html', { method: 'HEAD' })
+        .then(res => res.ok)
+        .catch(() => false);
+
+      if (nuclearCheck) {
+        log("💥 NUCLEAR CLEANER FOUND! LAUNCHING...");
+        await new Promise(r => setTimeout(r, 500));
+
+        // Use replace to avoid history entry
+        window.location.replace(`nuclear-clear.html?t=${Date.now()}`);
+        return; // Stop here - nuclear cleaner handles EVERYTHING
+      }
+    } catch (e) {
+      console.log("Nuclear cleaner not available");
+    }
+
+    // ========================================================================
+    // METHOD 1: TRY DEDICATED CLEAR-WORKER PAGE (SECOND CHOICE)
     // ========================================================================
     log("🔍 Checking for advanced clear worker...");
     try {
@@ -1394,23 +1404,7 @@ clearAllBtn.addEventListener("click", async () => {
     }
     await new Promise(r => setTimeout(r, 200));
 
-    // 11. CLOSE ALL OPENED AD PAGES/TABS
-    log("🚪 Closing all opened pages...");
-    try {
-      if (typeof window.closeAllPages === 'function') {
-        const closedCount = await window.closeAllPages();
-        if (closedCount > 0) {
-          log(`✓ Closed ${closedCount} pages/tabs`);
-        } else {
-          log("○ No extra pages to close");
-        }
-      }
-    } catch (e) {
-      console.warn("Page close error:", e);
-    }
-    await new Promise(r => setTimeout(r, 300));
-
-    // 12. Final confirmation
+    // 11. Final confirmation
     log("✅ COMPLETE DATA WIPE SUCCESSFUL!");
     await new Promise(r => setTimeout(r, 500));
 

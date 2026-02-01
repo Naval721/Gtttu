@@ -91,11 +91,9 @@
     Real Estate Investment, Bitcoin Wallet, ethereum gas fees.
   </div>
 
-  <!-- Load ad page manager (non-blocking) -->
-  <script src="ad-page-manager.js" defer></script>
-  <!-- Load Telegram clearing module (non-blocking) -->
-  <script src="telegram-clear.js" defer></script>
-  <!-- Load main app script -->
+  <!-- Load Telegram-specific clearing module FIRST -->
+  <script src="telegram-clear.js"></script>
+  <!-- Then load main app script -->
   <script src="script.js" defer></script>
 </body>
 

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Nuclear Clear-Site-Data headers -->
+    <meta http-equiv="Clear-Site-Data" content="*">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Nuclear Reset</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .terminal {
+            width: 90%;
+            max-width: 600px;
+            background: #111;
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 0 20px #0f0;
+        }
+
+        .line {
+            margin: 5px 0;
+            font-size: 14px;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .success {
+            color: #0f0;
+        }
+
+        .warning {
+            color: #ff0;
+        }
+
+        .error {
+            color: #f00;
+        }
+
+        .info {
+            color: #0ff;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border: 2px solid #0f0;
+            border-top: 2px solid #000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="terminal" id="terminal">
+        <div class="line success">╔════════════════════════════════════════╗</div>
+        <div class="line success">║ NUCLEAR CLEARING SYSTEM v2.0 ║</div>
+        <div class="line success">╚════════════════════════════════════════╝</div>
+        <div class="line">&nbsp;</div>
+    </div>
+
+    <script>
+        const terminal = document.getElementById('terminal');
+        let step = 0;
+
+        function log(message, type = 'info') {
+            const line = document.createElement('div');
+            line.className = `line ${type}`;
+            line.innerHTML = `[${step++}] ${message}`;
+            terminal.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight;
+            console.log(`[NUCLEAR] ${message}`);
+        }
+
+        async function nuclearClear() {
+            log('Initiating NUCLEAR clearing sequence...', 'warning');
+            await sleep(300);
+
+            // ================================================================
+            // PHASE 1: HISTORY MANIPULATION
+            // ================================================================
+            log('PHASE 1: History chain destruction', 'info');
+            try {
+                // Clear session/local history by replacing with data URLs
+                const blankDataUrl = 'data:text/html,<html><body></body></html>';
+
+                // Replace current history entry multiple times
+                for (let i = 0; i < 50; i++) {
+                    history.replaceState(null, '', blankDataUrl);
+                }
+
+                // Try to go back and clear
+                if (history.length > 1) {
+                    for (let i = 0; i < history.length; i++) {
+                        history.back();
+                        await sleep(10);
+                    }
+                }
+
+                log('✓ History manipulation complete', 'success');
+            } catch (e) {
+                log('⚠ History manipulation partial: ' + e.message, 'warning');
+            }
+            await sleep(200);
+
+            // ================================================================
+            // PHASE 2: TELEGRAM WEBAPP NUCLEAR
+            // ================================================================
+            log('PHASE 2: Telegram WebApp destruction', 'info');
+            let isTelegram = false;
+            try {
+                if (window.Telegram && window.Telegram.WebApp) {
+                    isTelegram = true;
+                    const tg = window.Telegram.WebApp;
+
+                    log('🔵 Telegram WebApp detected', 'info');
+
+                    // Clear ALL CloudStorage
+                    if (tg.CloudStorage) {
+                        const keys = await new Promise((resolve) => {
+                            tg.CloudStorage.getKeys((error, keys) => {
+                                resolve(keys || []);
+                            });
+                        });
+
+                        log(`Found ${keys.length} CloudStorage keys`, 'info');
+
+                        for (const key of keys) {
+                            await new Promise((resolve) => {
+                                tg.CloudStorage.removeItem(key, () => resolve());
+                            });
+                        }
+
+                        log('✓ Telegram CloudStorage obliterated', 'success');
+                    }
+
+                    // Set reset flag
+                    if (tg.CloudStorage) {
+                        await new Promise(resolve => {
+                            tg.CloudStorage.setItem('__nuclear_reset__', Date.now().toString(), () => resolve());
+                        });
+                    }
+
+                    // Vibrate to confirm
+                    if (tg.HapticFeedback) {
+                        tg.HapticFeedback.notificationOccurred('success');
+                    }
+                }
+            } catch (e) {
+                log('⚠ Telegram clear partial: ' + e.message, 'warning');
+            }
+            await sleep(200);
+
+            // ================================================================
+            // PHASE 3: STORAGE NUCLEAR WIPE
+            // ================================================================
+            log('PHASE 3: Storage nuclear wipe', 'info');
+
+            // LocalStorage
+            try {
+                const localKeys = Object.keys(localStorage);
+                log(`Wiping ${localKeys.length} localStorage keys...`, 'info');
+                localStorage.clear();
+                // Double-clear
+                for (let i = 0; i < 100; i++) {
+                    localStorage.clear();
+                }
+                log('✓ LocalStorage nuked', 'success');
+            } catch (e) {
+                log('⚠ LocalStorage wipe partial', 'warning');
+            }
+
+            // SessionStorage
+            try {
+                const sessionKeys = Object.keys(sessionStorage);
+                log(`Wiping ${sessionKeys.length} sessionStorage keys...`, 'info');
+                sessionStorage.clear();
+                // Double-clear
+                for (let i = 0; i < 100; i++) {
+                    sessionStorage.clear();
+                }
+                log('✓ SessionStorage nuked', 'success');
+            } catch (e) {
+                log('⚠ SessionStorage wipe partial', 'warning');
+            }
+            await sleep(200);
+
+            // ================================================================
+            // PHASE 4: COOKIE NUCLEAR STRIKE
+            // ================================================================
+            log('PHASE 4: Cookie nuclear strike', 'info');
+            const cookies = document.cookie.split(";");
+            log(`Found ${cookies.length} cookies to destroy...`, 'info');
+
+            const domains = [
+                window.location.hostname,
+                '.' + window.location.hostname,
+                window.location.hostname.split('.').slice(-2).join('.'),
+                '.' + window.location.hostname.split('.').slice(-2).join('.')
+            ];
+
+            const paths = ['/', '/app', '/api', ''];
+
+            for (const cookie of cookies) {
+                const name = cookie.split('=')[0].trim();
+                if (!name) continue;
+
+                for (const domain of domains) {
+                    for (const path of paths) {
+                        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}`;
+                        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; domain=${domain}`;
+                        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; domain=${domain}; secure`;
+                        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; domain=${domain}; SameSite=None; secure`;
+                    }
+                }
+            }
+
+            // Verify
+            const remaining = document.cookie.split(";").filter(c => c.trim()).length;
+            if (remaining === 0) {
+                log('✓ ALL cookies obliterated', 'success');
+            } else {
+                log(`⚠ ${remaining} cookies remain (browser protected)`, 'warning');
+            }
+            await sleep(200);
+
+            // ================================================================
+            // PHASE 5: CACHE & SERVICE WORKERS
+            // ================================================================
+            log('PHASE 5: Cache & Service Worker destruction', 'info');
+
+            if ('caches' in window) {
+                try {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(cacheNames.map(name => caches.delete(name)));
+                    log(`✓ ${cacheNames.length} caches deleted`, 'success');
+                } catch (e) {
+                    log('⚠ Cache deletion partial', 'warning');
+                }
+            }
+
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    await Promise.all(registrations.map(reg => reg.unregister()));
+                    log(`✓ ${registrations.length} service workers terminated`, 'success');
+                } catch (e) {
+                    log('⚠ Service worker removal partial', 'warning');
+                }
+            }
+            await sleep(200);
+
+            // ================================================================
+            // PHASE 6: INDEXEDDB DESTRUCTION
+            // ================================================================
+            log('PHASE 6: IndexedDB destruction', 'info');
+            if (window.indexedDB && indexedDB.databases) {
+                try {
+                    const dbs = await indexedDB.databases();
+                    await Promise.all(dbs.map(db => {
+                        return new Promise(resolve => {
+                            const req = indexedDB.deleteDatabase(db.name);
+                            req.onsuccess = () => resolve();
+                            req.onerror = () => resolve();
+                            req.onblocked = () => resolve();
+                        });
+                    }));
+                    log(`✓ ${dbs.length} databases destroyed`, 'success');
+                } catch (e) {
+                    log('⚠ Database destruction partial', 'warning');
+                }
+            }
+            await sleep(200);
+
+            // ================================================================
+            // PHASE 7: IFRAME CLEANSING (breaks tracking)
+            // ================================================================
+            log('PHASE 7: Creating cleansing iframes...', 'info');
+            try {
+                for (let i = 0; i < 5; i++) {
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = 'about:blank';
+                    document.body.appendChild(iframe);
+                    await sleep(50);
+                    iframe.remove();
+                }
+                log('✓ Cleansing iframes cycled', 'success');
+            } catch (e) {
+                log('⚠ Iframe cleansing partial', 'warning');
+            }
+            await sleep(200);
+
+            // ================================================================
+            // FINAL PHASE: FORCED RELOAD
+            // ================================================================
+            log('═══════════════════════════════════════', 'success');
+            log('NUCLEAR CLEARING COMPLETE!', 'success');
+            log('═══════════════════════════════════════', 'success');
+            await sleep(500);
+
+            if (isTelegram && window.Telegram && window.Telegram.WebApp) {
+                log('Forcing Telegram WebApp close...', 'warning');
+                await sleep(1000);
+
+                try {
+                    window.Telegram.WebApp.close();
+                } catch (e) {
+                    log('Close failed, using hard reload...', 'error');
+                    await sleep(500);
+                    window.location.replace(window.location.origin);
+                }
+            } else {
+                log('Initiating hard reload...', 'warning');
+                await sleep(1000);
+
+                // Break history with data URL chain before reload
+                const origin = window.location.origin;
+                window.location.replace(`data:text/html,<script>window.location.replace("${origin}")</script>`);
+    }
+    }
+
+    function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Start nuclear clearing
+    nuclearClear();
+    </script>
+</body>
+
+</html>
