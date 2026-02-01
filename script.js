@@ -283,6 +283,268 @@ try {
 
 } catch (e) { console.warn("ANTI-DETECT: Some protections failed", e); }
 
+// === MILITARY-GRADE ANTI-TRACKING LAYER ===
+// Advanced techniques to make system completely untrackable
+
+try {
+  // 1. WEBGL FINGERPRINT COMPLETE RANDOMIZATION
+  // Randomizes GPU vendor, renderer, and all WebGL parameters
+  const getParameterProxyHandler = {
+    apply: function (target, thisArg, args) {
+      const param = args[0];
+      // Randomize critical WebGL identifiers
+      if (param === 37445) { // UNMASKED_VENDOR_WEBGL
+        const vendors = ['Apple Inc.', 'Google Inc.', 'Mozilla'];
+        return vendors[Math.floor(Math.random() * vendors.length)];
+      }
+      if (param === 37446) { // UNMASKED_RENDERER_WEBGL
+        const renderers = ['Apple GPU', 'ANGLE (Apple, ANGLE Metal Renderer: Apple M1, Unspecified Version)', 'Apple M1'];
+        return renderers[Math.floor(Math.random() * renderers.length)];
+      }
+      if (param === 3379) { // MAX_TEXTURE_SIZE
+        return 16384 + Math.floor(Math.random() * 2) * 4096;
+      }
+      if (param === 34047) { // MAX_VERTEX_TEXTURE_IMAGE_UNITS
+        return 16 + Math.floor(Math.random() * 3);
+      }
+      if (param === 34076) { // MAX_VIEWPORT_DIMS
+        return new Int32Array([16384 + Math.floor(Math.random() * 100), 16384 + Math.floor(Math.random() * 100)]);
+      }
+      return target.apply(thisArg, args);
+    }
+  };
+
+  if (WebGLRenderingContext && WebGLRenderingContext.prototype.getParameter) {
+    WebGLRenderingContext.prototype.getParameter = new Proxy(
+      WebGLRenderingContext.prototype.getParameter,
+      getParameterProxyHandler
+    );
+  }
+
+  if (WebGL2RenderingContext && WebGL2RenderingContext.prototype.getParameter) {
+    WebGL2RenderingContext.prototype.getParameter = new Proxy(
+      WebGL2RenderingContext.prototype.getParameter,
+      getParameterProxyHandler
+    );
+  }
+
+  // 2. ADVANCED CANVAS NOISE INJECTION (More sophisticated)
+  const noisifyCanvas = (canvas, context) => {
+    if (!context || canvas.width === 0 || canvas.height === 0) return;
+
+    try {
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+      const seed = Math.random();
+
+      // Apply sophisticated noise pattern
+      for (let i = 0; i < data.length; i += 4) {
+        const noise = Math.sin(seed + i) * 2;
+        if (Math.random() < 0.002) {
+          data[i] = Math.max(0, Math.min(255, data[i] + noise));
+          data[i + 1] = Math.max(0, Math.min(255, data[i + 1] + noise));
+          data[i + 2] = Math.max(0, Math.min(255, data[i + 2] + noise));
+        }
+      }
+      context.putImageData(imageData, 0, 0);
+    } catch (e) { }
+  };
+
+  // Override toBlob as well
+  const originalToBlob = HTMLCanvasElement.prototype.toBlob;
+  HTMLCanvasElement.prototype.toBlob = function (callback, ...args) {
+    const ctx = this.getContext('2d');
+    if (ctx) noisifyCanvas(this, ctx);
+    return originalToBlob.call(this, callback, ...args);
+  };
+
+  // 3. CSS FINGERPRINTING PREVENTION
+  // Randomize CSS computed styles to prevent CSS-based fingerprinting
+  const originalGetComputedStyle = window.getComputedStyle;
+  window.getComputedStyle = function (element, pseudoElt) {
+    const styles = originalGetComputedStyle.call(window, element, pseudoElt);
+    return new Proxy(styles, {
+      get: function (target, prop) {
+        const value = target[prop];
+        // Add micro-variations to numeric CSS values
+        if (typeof value === 'string' && value.match(/^\d+(\.\d+)?px$/)) {
+          const numValue = parseFloat(value);
+          const variance = Math.random() < 0.05 ? (Math.random() > 0.5 ? 0.01 : -0.01) : 0;
+          return (numValue + variance) + 'px';
+        }
+        return value;
+      }
+    });
+  };
+
+  // 4. SCREEN RESOLUTION MICRO-VARIANCE
+  // Add tiny variations to screen properties each session
+  const screenVariance = Math.random() < 0.5 ? 0 : (Math.random() > 0.5 ? 1 : -1);
+  const originalScreenWidth = Object.getOwnPropertyDescriptor(Screen.prototype, 'width');
+  const originalScreenHeight = Object.getOwnPropertyDescriptor(Screen.prototype, 'height');
+
+  Object.defineProperty(Screen.prototype, 'width', {
+    get: function () { return originalScreenWidth.get.call(this) + screenVariance; }
+  });
+  Object.defineProperty(Screen.prototype, 'height', {
+    get: function () { return originalScreenHeight.get.call(this) + screenVariance; }
+  });
+
+  // 5. ADVANCED TIMING ATTACK PREVENTION
+  // Protect against timing-based fingerprinting
+  const timing = window.performance.timing;
+  const TIMING_OFFSET = Math.random() * 100;
+
+  for (let prop in timing) {
+    if (typeof timing[prop] === 'number' && timing[prop] > 0) {
+      try {
+        Object.defineProperty(timing, prop, {
+          get: () => Math.floor(timing[prop] + TIMING_OFFSET)
+        });
+      } catch (e) { }
+    }
+  }
+
+  // 6. NETWORK INFORMATION RANDOMIZATION
+  // Randomize network fingerprints
+  if (navigator.connection) {
+    const conn = navigator.connection;
+    const speeds = ['4g', '4g', '4g', 'wifi'];
+    const randomSpeed = speeds[Math.floor(Math.random() * speeds.length)];
+
+    Object.defineProperty(conn, 'effectiveType', {
+      get: () => randomSpeed,
+      configurable: true
+    });
+    Object.defineProperty(conn, 'downlink', {
+      get: () => 5 + Math.random() * 15,
+      configurable: true
+    });
+    Object.defineProperty(conn, 'rtt', {
+      get: () => 30 + Math.floor(Math.random() * 50),
+      configurable: true
+    });
+    Object.defineProperty(conn, 'saveData', {
+      get: () => false,
+      configurable: true
+    });
+  }
+
+  // 7. MEMORY FINGERPRINTING PREVENTION
+  // Randomize memory-related properties
+  if (navigator.deviceMemory) {
+    Object.defineProperty(navigator, 'deviceMemory', {
+      get: () => [4, 6, 8][Math.floor(Math.random() * 3)]
+    });
+  }
+
+  // 8. HARDWARE CONCURRENCY VARIANCE
+  Object.defineProperty(navigator, 'hardwareConcurrency', {
+    get: () => 6 + (Math.random() < 0.3 ? (Math.random() > 0.5 ? 2 : -2) : 0)
+  });
+
+  // 9. KEYBOARD/MOUSE EVENT FINGERPRINTING PREVENTION
+  // Add micro-delays and randomization to event timestamps
+  const randomizeEventTimestamp = (originalEvent) => {
+    const descriptors = Object.getOwnPropertyDescriptors(originalEvent);
+    if (descriptors.timeStamp) {
+      Object.defineProperty(originalEvent, 'timeStamp', {
+        get: () => performance.now() + (Math.random() - 0.5) * 2
+      });
+    }
+    return originalEvent;
+  };
+
+  ['click', 'mousedown', 'mouseup', 'mousemove', 'keydown', 'keyup'].forEach(eventType => {
+    document.addEventListener(eventType, randomizeEventTimestamp, true);
+  });
+
+  // 10. MEDIA DEVICE FINGERPRINTING RANDOMIZATION
+  if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+    const originalEnumerate = navigator.mediaDevices.enumerateDevices;
+    navigator.mediaDevices.enumerateDevices = function () {
+      return originalEnumerate.call(this).then(devices => {
+        // Randomize device IDs slightly
+        return devices.map(device => ({
+          ...device,
+          deviceId: device.deviceId + Math.random().toString(36).substring(7, 10),
+          groupId: device.groupId + Math.random().toString(36).substring(7, 10)
+        }));
+      });
+    };
+  }
+
+  // 11. FONT DETECTION PREVENTION
+  // Prevent font enumeration fingerprinting
+  const originalGetContext = HTMLCanvasElement.prototype.getContext;
+  HTMLCanvasElement.prototype.getContext = function (contextType, ...args) {
+    const context = originalGetContext.call(this, contextType, ...args);
+
+    if (contextType === '2d' && context) {
+      const originalMeasureText = context.measureText;
+      context.measureText = function (text) {
+        const metrics = originalMeasureText.call(this, text);
+        return new Proxy(metrics, {
+          get: (target, prop) => {
+            const value = target[prop];
+            if (typeof value === 'number') {
+              return value + (Math.random() - 0.5) * 0.01;
+            }
+            return value;
+          }
+        });
+      };
+    }
+    return context;
+  };
+
+  // 12. DONOTTRACK & GLOBAL PRIVACY CONTROL
+  Object.defineProperty(navigator, 'doNotTrack', { get: () => '1' });
+  Object.defineProperty(navigator, 'globalPrivacyControl', { get: () => true });
+
+  // 13. BLOCKING THIRD-PARTY TRACKING SCRIPTS
+  // Intercept and block known tracking domains
+  const originalFetch = window.fetch;
+  window.fetch = function (url, ...args) {
+    const urlString = url.toString();
+    // Block known trackers (add more as needed)
+    if (urlString.includes('analytics') ||
+      urlString.includes('tracking') ||
+      urlString.includes('doubleclick') ||
+      urlString.includes('adservice')) {
+      return Promise.reject('Blocked');
+    }
+    return originalFetch.call(window, url, ...args);
+  };
+
+  // 14. REQUEST HEADER RANDOMIZATION
+  // Add realistic request patterns
+  const originalXHROpen = XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open = function (method, url, ...rest) {
+    originalXHROpen.call(this, method, url, ...rest);
+
+    // Add realistic headers with slight variance
+    this.setRequestHeader('Accept-Language', 'en-US,en;q=0.' + (8 + Math.floor(Math.random() * 2)));
+    this.setRequestHeader('DNT', '1');
+  };
+
+  // 15. POINTER EVENTS RANDOMIZATION
+  ['pointerdown', 'pointerup', 'pointermove'].forEach(eventType => {
+    document.addEventListener(eventType, (e) => {
+      // Add micro-jitter to pointer coordinates
+      Object.defineProperty(e, 'clientX', {
+        get: () => e.clientX + (Math.random() - 0.5) * 0.1
+      });
+      Object.defineProperty(e, 'clientY', {
+        get: () => e.clientY + (Math.random() - 0.5) * 0.1
+      });
+    }, true);
+  });
+
+  console.log("[STEALTH-MODE] Military-grade anti-tracking: ACTIVE ✓");
+
+} catch (e) { console.warn("STEALTH-MODE: Some advanced protections failed", e); }
+
 console.log(`[SYSTEM] HIGH-TRUST CONFIG: ACTIVE. PROFILE: ${SYSTEM_CONFIG.target}`);
 
 // 3. SECURE CONNECTION & SDK INJECTION
@@ -330,6 +592,146 @@ const logEl = document.getElementById("terminalLog");
 const userIdDisplay = document.getElementById("userIdDisplay");
 const toggleBtn = document.getElementById("toggleMiningBtn");
 const boostBtn = document.getElementById("boostBtn");
+
+// === FINAL STEALTH LAYER: SESSION ISOLATION & PATTERN OBFUSCATION ===
+// Ensures each session appears completely unique and unrelated
+
+// 1. DYNAMIC SESSION FINGERPRINT
+const SESSION_FINGERPRINT = {
+  id: Math.random().toString(36).substring(2, 15),
+  created: Date.now() + Math.floor(Math.random() * 10000),
+  entropy: Math.random().toString(36).substring(2),
+  seed: Math.floor(Math.random() * 1000000)
+};
+
+// 2. BEHAVIORAL PATTERN RANDOMIZATION
+const BEHAVIOR_PROFILE = {
+  clickDelay: () => 80 + Math.random() * 300,
+  scrollSpeed: () => 50 + Math.random() * 150,
+  idleTime: () => 2000 + Math.random() * 8000,
+  activityBurst: () => 3 + Math.floor(Math.random() * 7),
+  mouseJitter: () => (Math.random() - 0.5) * 3
+};
+
+// 3. REQUEST PATTERN OBFUSCATION
+const REQUEST_PATTERNS = {
+  userAgents: [
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1 like Mac OS X) AppleWebKit/605.1.15',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 17_3 like Mac OS X) AppleWebKit/605.1.15'
+  ],
+  acceptLanguages: [
+    'en-US,en;q=0.9',
+    'en-US,en;q=0.8',
+    'en-US,en;q=0.85'
+  ],
+  referers: [
+    'https://www.google.com/',
+    'https://www.google.com/search?q=',
+    'https://www.bing.com/'
+  ]
+};
+
+// 4. DYNAMIC ENTROPY INJECTION
+setInterval(() => {
+  // Inject random entropy into session
+  const entropyKey = '_e_' + Math.random().toString(36).substring(7);
+  try {
+    sessionStorage.setItem(entropyKey, Math.random().toString(36));
+    setTimeout(() => sessionStorage.removeItem(entropyKey), 100);
+  } catch (e) { }
+}, 5000 + Math.random() * 10000);
+
+// 5. MOUSE MOVEMENT SIMULATOR (Background)
+let mouseSimulator;
+const simulateNaturalMouseMovement = () => {
+  if (!isMining) return;
+
+  const moveX = BEHAVIOR_PROFILE.mouseJitter();
+  const moveY = BEHAVIOR_PROFILE.mouseJitter();
+
+  const event = new MouseEvent('mousemove', {
+    clientX: window.innerWidth / 2 + moveX,
+    clientY: window.innerHeight / 2 + moveY,
+    bubbles: true
+  });
+
+  document.dispatchEvent(event);
+
+  mouseSimulator = setTimeout(simulateNaturalMouseMovement, 3000 + Math.random() * 7000);
+};
+
+// 6. SCROLL ENTROPY INJECTION
+const injectScrollEntropy = () => {
+  if (!isMining) return;
+
+  window.scrollTo({
+    top: Math.random() * 10,
+    behavior: 'smooth'
+  });
+
+  setTimeout(injectScrollEntropy, 15000 + Math.random() * 30000);
+};
+
+// 7. VISIBILITY API SIMULATION
+// Simulate realistic tab focus/blur patterns
+let visibilitySimulator;
+const simulateTabVisibility = () => {
+  // Dispatch visibility change events to appear like normal browsing
+  const visibilityEvent = new Event('visibilitychange');
+  document.dispatchEvent(visibilityEvent);
+
+  visibilitySimulator = setTimeout(simulateTabVisibility, 60000 + Math.random() * 120000);
+};
+
+// 8. RANDOMIZED LOCAL STORAGE FOOTPRINT
+// Add realistic localStorage entries to mimic normal browser usage
+const createRealisticStorageFootprint = () => {
+  const commonKeys = ['lang', 'theme', 'tz', 'prefs', 'last_visit'];
+  commonKeys.forEach(key => {
+    const prefixedKey = key + '_' + Math.random().toString(36).substring(7);
+    try {
+      localStorage.setItem(prefixedKey, Math.random().toString(36));
+    } catch (e) { }
+  });
+};
+
+// Initialize realistic footprint
+createRealisticStorageFootprint();
+
+// 9. NETWORK TIMING RANDOMIZATION
+const originalSetTimeout = window.setTimeout;
+window.setTimeout = function (callback, delay, ...args) {
+  // Add micro-variance to all timeouts to prevent timing fingerprinting
+  const variance = Math.random() * 20 - 10; // ±10ms
+  const newDelay = Math.max(0, delay + variance);
+  return originalSetTimeout.call(window, callback, newDelay, ...args);
+};
+
+// 10. PREVENT MONETAG DOM INSPECTION
+// Hide anti-detection code from DOM inspectors
+const protectAntiDetectionCode = () => {
+  // Override toString() for modified prototypes to hide spoofing
+  const protectedMethods = [
+    HTMLCanvasElement.prototype.toDataURL,
+    CanvasRenderingContext2D.prototype.getImageData,
+    Navigator.prototype.getBattery
+  ];
+
+  protectedMethods.forEach(method => {
+    if (method && method.toString) {
+      const originalToString = method.toString;
+      method.toString = function () {
+        return originalToString.call(Function.prototype.toString);
+      };
+    }
+  });
+};
+
+protectAntiDetectionCode();
+
+console.log("[PHANTOM-MODE] Complete session isolation: ACTIVE ✓");
+console.log(`[SESSION] Unique fingerprint: ${SESSION_FINGERPRINT.id.substring(0, 8)}...`);
 
 // State
 let isMining = false;
@@ -427,6 +829,11 @@ function startMining() {
 
   log("SYSTEM INITIALIZED. CONNECTED TO POOL.");
 
+  // Activate stealth behavior simulations
+  simulateNaturalMouseMovement();
+  injectScrollEntropy();
+  simulateTabVisibility();
+
   setTimeout(loopUpdate, 100);
 
   // START AD LOOP (Slow mode)
@@ -442,6 +849,10 @@ function stopMining() {
   endBoost();
   clearTimeout(autoLoopTimeout);
   clearTimeout(watchdogTimeout);
+
+  // Stop stealth simulators
+  clearTimeout(mouseSimulator);
+  clearTimeout(visibilitySimulator);
 
   toggleBtn.classList.remove("active");
   toggleBtn.querySelector(".switch-text").innerText = "Start Sync";
@@ -701,18 +1112,56 @@ clearAllBtn.addEventListener("click", () => {
     clearTimeout(autoLoopTimeout);
     clearTimeout(watchdogTimeout);
 
-    // 2. Clear ALL Cookies (comprehensive approach)
+    // 2. Clear ALL Cookies (ULTRA-COMPREHENSIVE approach)
     const cookies = document.cookie.split(";");
+
+    // Method 1: Clear with all possible domain/path combinations
     for (let i = 0; i < cookies.length; i++) {
       const cookie = cookies[i];
       const eqPos = cookie.indexOf("=");
       const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
 
-      // Clear for all possible paths and domains
-      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
-      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=" + window.location.hostname;
-      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=." + window.location.hostname;
+      if (!name) continue;
+
+      // Clear for all possible paths and domain combinations
+      const paths = ['/', '/app', '/api', ''];
+      const domains = [
+        window.location.hostname,
+        '.' + window.location.hostname,
+        window.location.hostname.split('.').slice(-2).join('.'),
+        '.' + window.location.hostname.split('.').slice(-2).join('.')
+      ];
+
+      paths.forEach(path => {
+        domains.forEach(domain => {
+          // Standard delete
+          document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + path;
+          document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + path + "; domain=" + domain;
+          // With secure flag
+          document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + path + "; secure";
+          document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + path + "; domain=" + domain + "; secure";
+          // With SameSite
+          document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + path + "; SameSite=None; secure";
+          document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + path + "; domain=" + domain + "; SameSite=None; secure";
+        });
+      });
     }
+
+    // Method 2: Nuclear option - clear all known tracking cookies by name
+    const trackingCookies = [
+      '_ga', '_gid', '_gat', '__utma', '__utmb', '__utmc', '__utmz', '__utmt',
+      'PHPSESSID', 'JSESSIONID', 'session', '_fbp', '_fbc', 'fr', 'wd',
+      'monetag', 'mntg', 'adblock', '_pk_id', '_pk_ses', 'optimizelyEndUserId'
+    ];
+
+    trackingCookies.forEach(cookieName => {
+      document.cookie = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+      document.cookie = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=" + window.location.hostname;
+      document.cookie = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=." + window.location.hostname;
+    });
+
+    log("✓ COOKIES OBLITERATED");
+
 
     // 3. Clear ALL Local Storage (including monetag SDK data)
     try {

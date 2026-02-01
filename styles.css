@@ -58,13 +58,13 @@ body {
 .app-layout {
     max-width: 480px;
     margin: 0 auto;
-    padding: 24px;
+    padding: 16px;
     width: 100%;
     height: 100vh;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     position: fixed !important;
     top: 0;
     left: 50%;
@@ -75,7 +75,7 @@ body {
 
 /* Header */
 .header {
-    margin-bottom: 10px;
+    margin-bottom: 4px;
     position: static !important;
     transform: none !important;
 }
@@ -119,8 +119,8 @@ h3 {
 /* Cards */
 .card {
     background: #ffffff;
-    border-radius: 20px;
-    padding: 20px;
+    border-radius: 16px;
+    padding: 16px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
     border: 1px solid rgba(0, 0, 0, 0.02);
     position: static !important;
@@ -129,9 +129,9 @@ h3 {
 
 .main-stats {
     text-align: center;
-    padding: 40px 20px;
-    min-height: 220px;
-    height: 220px;
+    padding: 24px 16px;
+    min-height: 180px;
+    height: 180px;
     position: static !important;
 }
 
@@ -145,10 +145,10 @@ h3 {
 }
 
 .big-value {
-    font-size: 52px;
+    font-size: 44px;
     font-weight: 800;
     color: #3b82f6;
-    margin: 10px 0;
+    margin: 8px 0;
     letter-spacing: -2px;
     position: static !important;
     transform: none !important;
@@ -210,18 +210,18 @@ h3 {
 
 .btn {
     width: 100%;
-    height: 56px;
-    min-height: 56px;
-    padding: 18px;
+    height: 50px;
+    min-height: 50px;
+    padding: 14px;
     border: none;
-    border-radius: 16px;
-    font-size: 16px;
+    border-radius: 14px;
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     font-family: 'Inter', sans-serif;
     position: static !important;
     transform: none !important;
@@ -272,11 +272,11 @@ h3 {
 
 /* Compact button for top placement */
 .compact-btn {
-    height: 44px;
-    min-height: 44px;
-    padding: 12px 16px;
+    height: 40px;
+    min-height: 40px;
+    padding: 10px 14px;
     font-size: 14px;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 /* Buttons */
@@ -284,10 +284,9 @@ h3 {
     margin-top: auto;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding-bottom: 20px;
-    min-height: 144px;
-    height: 144px;
+    gap: 10px;
+    padding-bottom: 12px;
+    min-height: auto;
     position: static !important;
 }
 
