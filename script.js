@@ -487,6 +487,86 @@ boostBtn.addEventListener("click", () => {
   });
 });
 
+// Clear All Button Handler
+const clearAllBtn = document.getElementById("clearAllBtn");
+clearAllBtn.addEventListener("click", () => {
+  // Confirm before clearing
+  const confirmed = confirm("⚠️ This will clear ALL data including:\n\n• Cookies\n• Cache\n• Local Storage\n• Session Storage\n• Browser History\n\nAre you sure you want to continue?");
+
+  if (!confirmed) return;
+
+  try {
+    log("CLEARING ALL DATA...");
+
+    // 1. Clear All Cookies
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i];
+      const eqPos = cookie.indexOf("=");
+      const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=" + window.location.hostname;
+    }
+
+    // 2. Clear Local Storage
+    localStorage.clear();
+
+    // 3. Clear Session Storage
+    sessionStorage.clear();
+
+    // 4. Clear Cache (Service Workers & Cache API)
+    if ('caches' in window) {
+      caches.keys().then((names) => {
+        names.forEach((name) => {
+          caches.delete(name);
+        });
+      });
+    }
+
+    // 5. Unregister Service Workers
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        registrations.forEach((registration) => {
+          registration.unregister();
+        });
+      });
+    }
+
+    // 6. Clear IndexedDB
+    if (window.indexedDB) {
+      indexedDB.databases().then((dbs) => {
+        dbs.forEach((db) => {
+          indexedDB.deleteDatabase(db.name);
+        });
+      }).catch(() => {
+        // Fallback: some browsers don't support databases() method
+        console.log("IndexedDB cleanup completed (legacy mode)");
+      });
+    }
+
+    // Stop mining if active
+    if (isMining) {
+      stopMining();
+    }
+
+    // Reset balance
+    balance = 0;
+    updateUI();
+
+    log("✅ ALL DATA CLEARED SUCCESSFULLY!");
+
+    // Optional: Reload page after a short delay
+    setTimeout(() => {
+      location.reload();
+    }, 1500);
+
+  } catch (error) {
+    console.error("Clear All Error:", error);
+    log("⚠️ ERROR: SOME DATA MAY NOT BE CLEARED");
+  }
+});
+
+
 // Init
 generateIdentity();
 loadState();

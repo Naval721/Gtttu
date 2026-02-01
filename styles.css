@@ -203,8 +203,8 @@ h3 {
     flex-direction: column;
     gap: 12px;
     padding-bottom: 20px;
-    min-height: 144px;
-    height: 144px;
+    min-height: 200px;
+    height: 200px;
     position: static !important;
 }
 
@@ -254,6 +254,22 @@ h3 {
     cursor: not-allowed;
     filter: grayscale(1);
 }
+
+.danger-btn {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+}
+
+.danger-btn:hover {
+    background: #fecaca;
+}
+
+.danger-btn:active {
+    background: #fca5a5;
+}
+
 
 /* Footer Log */
 .footer-log {
