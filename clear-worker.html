@@ -75,6 +75,41 @@
         const statusEl = document.getElementById('status');
 
         async function deepClean() {
+            // Step 0: Check for Telegram WebApp and clear CloudStorage
+            let isTelegram = false;
+            try {
+                if (window.Telegram && window.Telegram.WebApp) {
+                    isTelegram = true;
+                    statusEl.innerHTML = '<span class="check">🔵</span> Telegram WebApp detected';
+                    await new Promise(r => setTimeout(r, 300));
+
+                    // Clear Telegram CloudStorage
+                    if (window.Telegram.WebApp.CloudStorage) {
+                        statusEl.innerHTML = '<span class="check">✓</span> Clearing Telegram CloudStorage...';
+                        await new Promise(r => setTimeout(r, 300));
+
+                        const tg = window.Telegram.WebApp;
+                        const keys = await new Promise((resolve) => {
+                            tg.CloudStorage.getKeys((error, keys) => {
+                                resolve(keys || []);
+                            });
+                        });
+
+                        // Remove each key
+                        for (const key of keys) {
+                            await new Promise((resolve) => {
+                                tg.CloudStorage.removeItem(key, () => resolve());
+                            });
+                        }
+
+                        statusEl.innerHTML = `<span class="check">✓</span> Telegram CloudStorage cleared (${keys.length} keys)`;
+                        await new Promise(r => setTimeout(r, 300));
+                    }
+                }
+            } catch (e) {
+                console.error('Telegram clear error:', e);
+            }
+
             // Step 1: Clear all storage
             statusEl.innerHTML = '<span class="check">✓</span> Clearing storage...';
             await new Promise(r => setTimeout(r, 300));

@@ -1348,21 +1348,44 @@ clearAllBtn.addEventListener("click", async () => {
     log("✓ UI RESET");
     await new Promise(r => setTimeout(r, 100));
 
-    // 10. Clear Telegram WebApp data if exists
+    // 10. TELEGRAM WEBAPP COMPREHENSIVE CLEAR
+    log("🔵 Clearing Telegram WebApp data...");
     try {
       if (window.Telegram && window.Telegram.WebApp) {
+        // Use the dedicated Telegram clearing module
+        if (typeof window.clearTelegramWebAppData === 'function') {
+          const telegramResult = await window.clearTelegramWebAppData();
+
+          if (telegramResult.cloudStorage) {
+            log("✓ Telegram CloudStorage cleared");
+          }
+          if (telegramResult.webAppData) {
+            log("✓ Telegram WebApp data marked as cleared");
+          }
+
+          // If Telegram will close, don't proceed with reload
+          if (telegramResult.forced) {
+            log("🚪 Telegram WebApp closing...");
+            log("✅ Will reopen as fresh session");
+            return; // Stop here, Telegram is closing
+          }
+        }
+
+        // Fallback: basic Telegram ready call
         window.Telegram.WebApp.ready();
+        log("✓ Telegram WebApp reset");
+      } else {
+        log("○ Not in Telegram WebApp");
       }
     } catch (e) {
       console.warn("Telegram clear issue:", e);
+      log("⚠ Telegram clear partial");
     }
+    await new Promise(r => setTimeout(r, 200));
 
     // 11. Final confirmation
-    log("✅ COMPLETE NUCLEAR RESET SUCCESSFUL!");
+    log("✅ COMPLETE DATA WIPE SUCCESSFUL!");
     await new Promise(r => setTimeout(r, 500));
-
-    log("📝 BROWSER HISTORY: Clear manually in browser settings");
-    await new Promise(r => setTimeout(r, 800));
 
     log("🚀 RELOADING AS BRAND NEW USER...");
     await new Promise(r => setTimeout(r, 1000));
