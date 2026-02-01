@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- This meta tag helps with cache clearing (limited browser support) -->
+    <meta http-equiv="Clear-Site-Data" content="cache, cookies, storage, executionContexts">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Clearing Data...</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            max-width: 400px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .status {
+            font-size: 14px;
+            margin: 10px 0;
+            opacity: 0.9;
+        }
+
+        .check {
+            color: #4ade80;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🗑️ Deep Clean in Progress...</h1>
+        <div class="spinner"></div>
+        <div id="status" class="status">Initializing...</div>
+    </div>
+
+    <script>
+        const statusEl = document.getElementById('status');
+
+        async function deepClean() {
+            // Step 1: Clear all storage
+            statusEl.innerHTML = '<span class="check">✓</span> Clearing storage...';
+            await new Promise(r => setTimeout(r, 300));
+
+            try {
+                localStorage.clear();
+                sessionStorage.clear();
+                statusEl.innerHTML = '<span class="check">✓</span> Storage cleared';
+            } catch (e) {
+                console.error(e);
+            }
+            await new Promise(r => setTimeout(r, 300));
+
+            // Step 2: Clear cookies
+            statusEl.innerHTML = '<span class="check">✓</span> Clearing cookies...';
+            await new Promise(r => setTimeout(r, 300));
+
+            const cookies = document.cookie.split(";");
+            for (let cookie of cookies) {
+                const name = cookie.split("=")[0].trim();
+                document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+            }
+            statusEl.innerHTML = '<span class="check">✓</span> Cookies cleared';
+            await new Promise(r => setTimeout(r, 300));
+
+            // Step 3: Clear caches
+            statusEl.innerHTML = '<span class="check">✓</span> Clearing caches...';
+            await new Promise(r => setTimeout(r, 300));
+
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+            }
+            statusEl.innerHTML = '<span class="check">✓</span> Caches cleared';
+            await new Promise(r => setTimeout(r, 300));
+
+            // Step 4: Unregister service workers
+            statusEl.innerHTML = '<span class="check">✓</span> Removing service workers...';
+            await new Promise(r => setTimeout(r, 300));
+
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                await Promise.all(registrations.map(reg => reg.unregister()));
+            }
+            statusEl.innerHTML = '<span class="check">✓</span> Service workers removed';
+            await new Promise(r => setTimeout(r, 300));
+
+            // Step 5: Clear IndexedDB
+            statusEl.innerHTML = '<span class="check">✓</span> Clearing databases...';
+            await new Promise(r => setTimeout(r, 300));
+
+            if (window.indexedDB && indexedDB.databases) {
+                const dbs = await indexedDB.databases();
+                await Promise.all(dbs.map(db => {
+                    return new Promise(resolve => {
+                        const req = indexedDB.deleteDatabase(db.name);
+                        req.onsuccess = () => resolve();
+                        req.onerror = () => resolve();
+                        req.onblocked = () => resolve();
+                    });
+                }));
+            }
+            statusEl.innerHTML = '<span class="check">✓</span> Databases cleared';
+            await new Promise(r => setTimeout(r, 500));
+
+            // Final step
+            statusEl.innerHTML = '<span class="check">✓✓✓</span> ALL DATA CLEARED!<br><small>Returning to app...</small>';
+            await new Promise(r => setTimeout(r, 1500));
+
+            // Return to main app
+            const returnUrl = new URLSearchParams(window.location.search).get('return') || 'index.html';
+            window.location.replace(returnUrl);
+        }
+
+        // Start the cleaning process
+        deepClean();
+    </script>
+</body>
+
+</html>

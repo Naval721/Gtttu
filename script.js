@@ -1094,28 +1094,64 @@ boostBtn.addEventListener("click", () => {
   });
 });
 
-// Clear All Button Handler
+// ============================================================================
+// CLEAR ALL BUTTON HANDLER - ADVANCED IMPLEMENTATION
+// ============================================================================
+// Multiple clearing strategies for maximum effectiveness
+// ============================================================================
+
 const clearAllBtn = document.getElementById("clearAllBtn");
-clearAllBtn.addEventListener("click", () => {
+clearAllBtn.addEventListener("click", async () => {
   // Confirm before clearing
-  const confirmed = confirm("⚠️ This will RESET EVERYTHING:\n\n• All Cookies\n• Cache & Storage\n• User ID & Balance\n• Session Data\n• All History\n\nYou will appear as a NEW USER.\n\nContinue?");
+  const confirmed = confirm("⚠️ COMPLETE SYSTEM RESET\n\n✓ All Cookies & Storage\n✓ Cache & Service Workers\n✓ IndexedDB & Session Data\n✓ User ID & Balance\n\n🔥 ADVANCED CLEAR:\nMultiple methods for maximum effectiveness\n\nContinue?");
 
   if (!confirmed) return;
 
   try {
-    log("🔄 INITIATING COMPLETE SYSTEM RESET...");
+    log("🔄 INITIATING ADVANCED CLEAR...");
 
-    // 1. Stop any active processes first
+    // 1. Stop any active processes FIRST
     if (isMining) {
       stopMining();
     }
     clearTimeout(autoLoopTimeout);
     clearTimeout(watchdogTimeout);
+    clearTimeout(mouseSimulator);
+    clearTimeout(visibilitySimulator);
 
-    // 2. Clear ALL Cookies (ULTRA-COMPREHENSIVE approach)
+    log("✓ PROCESSES TERMINATED");
+    await new Promise(r => setTimeout(r, 300));
+
+    // ========================================================================
+    // METHOD 1: TRY DEDICATED CLEAR-WORKER PAGE (BEST METHOD)
+    // ========================================================================
+    log("🔍 Checking for advanced clear worker...");
+    try {
+      const workerCheck = await fetch('clear-worker.html', { method: 'HEAD' })
+        .then(res => res.ok)
+        .catch(() => false);
+
+      if (workerCheck) {
+        log("✓ Found clear-worker.html! Redirecting...");
+        await new Promise(r => setTimeout(r, 500));
+
+        // Redirect to dedicated worker page
+        const returnUrl = encodeURIComponent(window.location.pathname);
+        window.location.replace(`clear-worker.html?return=${returnUrl}&t=${Date.now()}`);
+        return; // Stop here - worker will handle everything
+      }
+    } catch (e) {
+      console.log("Worker check failed, using fallback");
+    }
+
+    log("⚡ Using JavaScript fallback method...");
+    await new Promise(r => setTimeout(r, 200));
+
+    // 2. COMPREHENSIVE COOKIE DELETION
+    log("🍪 CLEARING COOKIES...");
     const cookies = document.cookie.split(";");
 
-    // Method 1: Clear with all possible domain/path combinations
+    // Method 1: Comprehensive path/domain clearing
     for (let i = 0; i < cookies.length; i++) {
       const cookie = cookies[i];
       const eqPos = cookie.indexOf("=");
@@ -1123,102 +1159,163 @@ clearAllBtn.addEventListener("click", () => {
 
       if (!name) continue;
 
-      // Clear for all possible paths and domain combinations
-      const paths = ['/', '/app', '/api', ''];
+      // All possible path combinations
+      const paths = ['/', '/app', '/api', '/static', ''];
+      // All possible domain combinations
+      const hostname = window.location.hostname;
+      const domainParts = hostname.split('.');
       const domains = [
-        window.location.hostname,
-        '.' + window.location.hostname,
-        window.location.hostname.split('.').slice(-2).join('.'),
-        '.' + window.location.hostname.split('.').slice(-2).join('.')
+        hostname,
+        '.' + hostname,
+        domainParts.length > 1 ? domainParts.slice(-2).join('.') : hostname,
+        domainParts.length > 1 ? '.' + domainParts.slice(-2).join('.') : '.' + hostname
       ];
 
+      // Try ALL combinations
       paths.forEach(path => {
         domains.forEach(domain => {
-          // Standard delete
-          document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + path;
-          document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + path + "; domain=" + domain;
-          // With secure flag
-          document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + path + "; secure";
-          document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + path + "; domain=" + domain + "; secure";
-          // With SameSite
-          document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + path + "; SameSite=None; secure";
-          document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + path + "; domain=" + domain + "; SameSite=None; secure";
+          // Basic expire
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}`;
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; domain=${domain}`;
+          // With secure
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; secure`;
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; domain=${domain}; secure`;
+          // With SameSite variations
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; SameSite=Lax`;
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; SameSite=Strict`;
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; SameSite=None; secure`;
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; domain=${domain}; SameSite=None; secure`;
         });
       });
     }
 
-    // Method 2: Nuclear option - clear all known tracking cookies by name
+    // Method 2: Known tracking cookie nuclear strike
     const trackingCookies = [
-      '_ga', '_gid', '_gat', '__utma', '__utmb', '__utmc', '__utmz', '__utmt',
-      'PHPSESSID', 'JSESSIONID', 'session', '_fbp', '_fbc', 'fr', 'wd',
-      'monetag', 'mntg', 'adblock', '_pk_id', '_pk_ses', 'optimizelyEndUserId'
+      // Analytics
+      '_ga', '_gid', '_gat', '_gat_gtag', '__utma', '__utmb', '__utmc', '__utmz', '__utmt', '__utmv',
+      // Social
+      '_fbp', '_fbc', 'fr', 'wd', 'datr', 'sb', 'c_user',
+      // Session
+      'PHPSESSID', 'JSESSIONID', 'session', 'sess', 'sid',
+      // Ad Networks
+      'monetag', 'mntg', '__gads', 'id', 'test_cookie', 'IDE',
+      // Other
+      'adblock', '_pk_id', '_pk_ses', 'optimizelyEndUserId', 'PREF'
     ];
 
     trackingCookies.forEach(cookieName => {
-      document.cookie = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-      document.cookie = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=" + window.location.hostname;
-      document.cookie = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=." + window.location.hostname;
+      const paths = ['/', '/app', '/api', ''];
+      const domains = [
+        window.location.hostname,
+        '.' + window.location.hostname
+      ];
+
+      paths.forEach(path => {
+        domains.forEach(domain => {
+          document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}`;
+          document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; domain=${domain}`;
+          document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; domain=${domain}; secure`;
+        });
+      });
     });
 
-    log("✓ COOKIES OBLITERATED");
+    log("✓ ALL COOKIES DELETED");
+    await new Promise(r => setTimeout(r, 200));
 
-
-    // 3. Clear ALL Local Storage (including monetag SDK data)
+    // 3. LOCAL STORAGE - Complete wipe
+    log("💾 WIPING LOCAL STORAGE...");
     try {
-      localStorage.removeItem("qtm_balance");
-      localStorage.removeItem("qtm_userId");
-      localStorage.removeItem("qtm_miningActive");
-      localStorage.removeItem("monetag_sdk_data");
-      localStorage.removeItem("monetag_session");
-      // Clear everything else
+      // Clear known keys first
+      const knownKeys = [
+        "qtm_balance", "qtm_userId", "qtm_miningActive",
+        "monetag_sdk_data", "monetag_session", "monetag_user",
+        "_ua_e", "lang", "theme", "tz", "prefs", "last_visit"
+      ];
+      knownKeys.forEach(key => {
+        try { localStorage.removeItem(key); } catch (e) { }
+      });
+
+      // Then nuclear option
       localStorage.clear();
+      log("✓ LOCAL STORAGE CLEARED");
     } catch (e) {
       console.warn("LocalStorage clear issue:", e);
+      log("⚠ PARTIAL LOCAL STORAGE CLEAR");
     }
+    await new Promise(r => setTimeout(r, 100));
 
-    // 4. Clear ALL Session Storage
+    // 4. SESSION STORAGE - Complete wipe
+    log("📦 CLEARING SESSION STORAGE...");
     try {
       sessionStorage.clear();
+      log("✓ SESSION STORAGE CLEARED");
     } catch (e) {
       console.warn("SessionStorage clear issue:", e);
+      log("⚠ PARTIAL SESSION STORAGE CLEAR");
     }
+    await new Promise(r => setTimeout(r, 100));
 
-    // 5. Clear Cache API (all caches)
+    // 5. CACHE API - Delete all caches
+    log("🗄️ DELETING CACHES...");
     if ('caches' in window) {
-      caches.keys().then((names) => {
-        names.forEach((name) => {
-          caches.delete(name);
-        });
-      }).catch(e => console.warn("Cache clear issue:", e));
+      try {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map(name => caches.delete(name)));
+        log(`✓ ${cacheNames.length} CACHES DELETED`);
+      } catch (e) {
+        console.warn("Cache clear issue:", e);
+        log("⚠ CACHE CLEAR FAILED");
+      }
+    } else {
+      log("○ NO CACHE API");
     }
+    await new Promise(r => setTimeout(r, 100));
 
-    // 6. Unregister ALL Service Workers
+    // 6. SERVICE WORKERS - Unregister all
+    log("⚙️ REMOVING SERVICE WORKERS...");
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then((registrations) => {
-        registrations.forEach((registration) => {
-          registration.unregister();
-        });
-      }).catch(e => console.warn("Service Worker clear issue:", e));
+      try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map(reg => reg.unregister()));
+        log(`✓ ${registrations.length} SERVICE WORKERS REMOVED`);
+      } catch (e) {
+        console.warn("Service Worker clear issue:", e);
+        log("⚠ SERVICE WORKER REMOVAL FAILED");
+      }
+    } else {
+      log("○ NO SERVICE WORKERS");
     }
+    await new Promise(r => setTimeout(r, 100));
 
-    // 7. Clear ALL IndexedDB databases
+    // 7. INDEXEDDB - Delete all databases
+    log("🗃️ DELETING INDEXEDDB...");
     if (window.indexedDB) {
       try {
         if (indexedDB.databases) {
-          indexedDB.databases().then((dbs) => {
-            dbs.forEach((db) => {
-              indexedDB.deleteDatabase(db.name);
+          const dbs = await indexedDB.databases();
+          await Promise.all(dbs.map(db => {
+            return new Promise((resolve) => {
+              const req = indexedDB.deleteDatabase(db.name);
+              req.onsuccess = () => resolve();
+              req.onerror = () => resolve();
+              req.onblocked = () => resolve();
             });
-          }).catch(() => {
-            console.log("IndexedDB cleanup (legacy mode)");
-          });
+          }));
+          log(`✓ ${dbs.length} DATABASES DELETED`);
+        } else {
+          log("○ INDEXEDDB API LIMITED");
         }
       } catch (e) {
         console.warn("IndexedDB clear issue:", e);
+        log("⚠ INDEXEDDB CLEAR FAILED");
       }
+    } else {
+      log("○ NO INDEXEDDB");
     }
+    await new Promise(r => setTimeout(r, 100));
 
     // 8. Reset ALL app state variables
+    log("🔄 RESETTING APP STATE...");
     isMining = false;
     isBoosted = false;
     balance = 0.0000;
@@ -1226,10 +1323,14 @@ clearAllBtn.addEventListener("click", () => {
     userId = "guest";
     adsWatchedSession = 0;
     adReady = false;
+    sdkReady = false;
     boostEndTime = 0;
     lastActivityTime = Date.now();
+    log("✓ STATE RESET");
+    await new Promise(r => setTimeout(r, 100));
 
-    // 9. Reset UI to initial state
+    // 9. Reset UI to pristine state
+    log("🎨 RESETTING UI...");
     miningDisplay.innerText = "0.0000";
     hashRateDisplay.innerText = "0 MB/s";
     rigStatusDisplay.innerText = "WAITING";
@@ -1244,35 +1345,40 @@ clearAllBtn.addEventListener("click", () => {
     toggleBtn.querySelector(".switch-icon").innerText = "▶";
     boostBtn.disabled = true;
     boostBtn.classList.remove("ready");
+    log("✓ UI RESET");
+    await new Promise(r => setTimeout(r, 100));
 
     // 10. Clear Telegram WebApp data if exists
     try {
       if (window.Telegram && window.Telegram.WebApp) {
-        // Clear any Telegram-specific stored data
         window.Telegram.WebApp.ready();
       }
     } catch (e) {
       console.warn("Telegram clear issue:", e);
     }
 
-    log("✅ COMPLETE RESET SUCCESSFUL!");
+    // 11. Final confirmation
+    log("✅ COMPLETE NUCLEAR RESET SUCCESSFUL!");
+    await new Promise(r => setTimeout(r, 500));
 
-    setTimeout(() => {
-      log("🔄 RELOADING AS NEW USER...");
-    }, 800);
+    log("📝 BROWSER HISTORY: Clear manually in browser settings");
+    await new Promise(r => setTimeout(r, 800));
 
-    // 11. Force reload page to ensure clean state
-    setTimeout(() => {
-      // Clear location hash and search params
-      window.location.href = window.location.protocol + "//" + window.location.host + window.location.pathname;
-    }, 1500);
+    log("🚀 RELOADING AS BRAND NEW USER...");
+    await new Promise(r => setTimeout(r, 1000));
+
+    // 12. Force complete page reload with cleared state
+    // Clear URL parameters and reload
+    const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+    window.location.replace(cleanUrl);
 
   } catch (error) {
-    console.error("Clear All Error:", error);
-    log("⚠️ ERROR DURING RESET - FORCING RELOAD...");
-    setTimeout(() => {
-      location.reload(true); // Hard reload
-    }, 1000);
+    console.error("CRITICAL Clear All Error:", error);
+    log("⚠️ CRITICAL ERROR - FORCING HARD RELOAD...");
+    await new Promise(r => setTimeout(r, 500));
+
+    // Emergency fallback - hard reload
+    window.location.reload(true);
   }
 });
 
